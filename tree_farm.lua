@@ -95,7 +95,7 @@ function return_logs()
     navigation.set_facing('neg_y')
     for i = 1, 16 do
         local detail = turtle.getItemDetail(i)
-        if detail.name == log_info.name then
+        if detail == nil or (detail.name == log_info.name) then
             turtle.select(i)
             turtle.drop(detail.count)
         end
