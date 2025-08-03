@@ -12,8 +12,8 @@ fuel_facing = 'neg_y'
 
 function refuel()
     local fuel_deficit = turtle.getFuelLimit() - turtle.getFuelLevel()
-    local coal_needed = math.floor(fuel_deficit % coal_energy_value)
-    print(string.format('Fuel Deficit: %d, Coal: %d'), fuel_deficit, coal_needed)
+    local coal_needed = math.floor(fuel_deficit / coal_energy_value)
+    print(string.format('Fuel Deficit: %d, Coal: %d', fuel_deficit, coal_needed))
     if coal_needed == 0 then
         return
     end
@@ -28,7 +28,7 @@ end
 
 function get_bone_meal()
     local item_deficit = turtle.getItemSpace(bone_meal_slot)
-    print(string.format('Bone Meal Deficit: %d'), item_deficit)
+    print(string.format('Bone Meal Deficit: %d', item_deficit))
     if item_deficit == 0 then
         return
     end
