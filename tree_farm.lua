@@ -6,9 +6,12 @@ sapling_slot = 14
 bone_meal_slot = 15
 fuel_slot = 16
 
-sapping_facing = 'pos_x'
+sapling_facing = 'pos_x'
 bone_meal_facing = 'neg_x'
 fuel_facing = 'neg_y'
+
+sapling_info = nil
+log_info = nil
 
 function refuel()
     local fuel_deficit = turtle.getFuelLimit() - turtle.getFuelLevel()
@@ -46,9 +49,12 @@ function get_sapling()
     end
 
     print('Getting sapling')
-    navigation.set_facing(sapping_facing)
+    navigation.set_facing(sapling_facing)
     turtle.select(sapling_slot)
     turtle.suck(1)
+    if sapling_info == nil then
+        _, sapling_info = turtle.getItemDetail(sapling_slot)
+    end
 end
 
 function plant_tree()
@@ -56,7 +62,6 @@ function plant_tree()
     navigation.go_forward(1)
     turtle.select(sapling_slot)
     turtle.place()
-    local _, sapling_info = turtle.inspect()
     local grown = false
 
     turtle.select(bone_meal_slot)
@@ -68,7 +73,10 @@ function plant_tree()
 end
 
 function cut_tree()
-    local _, log_info = turtle.inspect()
+    if log_info == nil then
+        _, log_info = turtle.inspect()
+    end
+
     turtle.select(1)
     turtle.dig()
     navigation.go_forward(1)
