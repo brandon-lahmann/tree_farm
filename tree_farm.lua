@@ -53,7 +53,7 @@ function get_sapling()
     turtle.select(sapling_slot)
     turtle.suck(1)
     if sapling_info == nil then
-        _, sapling_info = turtle.getItemDetail(sapling_slot)
+        sapling_info = turtle.getItemDetail(sapling_slot)
     end
 end
 
@@ -90,12 +90,28 @@ function cut_tree()
     end
 end
 
+function return_logs()
+    navigation.go_to(vector.new(0, 0, 3))
+    navigation.set_facing('neg_y')
+    for i = 1, 16 do
+        local detail = turtle.getItemDetail(i)
+        if detail.name == log_info.name then
+            turtle.select(i)
+            turtle.drop(detail.count)
+        end
+    end
+end
+
 function main()
     refuel()
     get_bone_meal()
     get_sapling()
     plant_tree()
     cut_tree()
+    return_logs()
+    navigation.go_to(vector.new(0, 0, 0))
 end
 
-main()
+while true do
+    main()
+end
