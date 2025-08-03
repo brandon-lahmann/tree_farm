@@ -6,13 +6,14 @@ sapling_slot = 14
 bone_meal_slot = 15
 fuel_slot = 16
 
-sapping_facing = 'pox_x'
+sapping_facing = 'pos_x'
 bone_meal_facing = 'neg_x'
 fuel_facing = 'neg_y'
 
 function refuel()
     local fuel_deficit = turtle.getFuelLimit() - turtle.getFuelLevel()
     local coal_needed = math.floor(fuel_deficit / coal_energy_value)
+    coal_needed = math.min(coal_needed, 64)
     print(string.format('Fuel Deficit: %d, Coal: %d', fuel_deficit, coal_needed))
     if coal_needed == 0 then
         return
@@ -66,11 +67,27 @@ function plant_tree()
     end
 end
 
+function cut_tree()
+    local _, log_info = turtle.inspect()
+    turtle.select(1)
+    turtle.dig()
+    navigation.go_forward(1)
+
+    local done = false
+    while not done do
+        turtle.digUp()
+        navigation.go_up(1)
+        local _, info = turtle.inspectUp()
+        done = (log_info.name ~= info.name)
+    end
+end
+
 function main()
     refuel()
     get_bone_meal()
     get_sapling()
     plant_tree()
+    cut_tree()
 end
 
 main()
