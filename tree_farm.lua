@@ -59,7 +59,7 @@ function get_sapling()
 end
 
 function plant_tree()
-    navigation.set_orientation('pos_x')
+    navigation.turn_to('pos_x')
     navigation.go_forward(2)
     turtle.select(turtle_slots.sapling)
     turtle.place()
@@ -95,7 +95,7 @@ end
 
 function return_logs()
     navigation.go_to(vector.new(0, 0, 3))
-    navigation.set_orientation('neg_x')
+    navigation.turn_to('neg_x')
     for i = 1, 16 do
         local detail = turtle.getItemDetail(i)
         if detail ~= nil and (detail.name == log_info.name) then
@@ -115,7 +115,7 @@ function main()
     cut_tree()
     -- return_logs()
     navigation.go_to(vector.new(0, 0, 0))
-    navigation.set_orientation('pos_x')
+    navigation.turn_to('pos_x')
 end
 
 while true do
