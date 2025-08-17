@@ -34,7 +34,7 @@ function refuel()
 end
 
 function get_bone_meal()
-    local item_deficit = turtle.getItemSpace(bone_meal_slot)
+    local item_deficit = turtle.getItemSpace(turtle_slots.bone_meal)
     if item_deficit == 0 then
         return
     end
@@ -45,7 +45,7 @@ function get_bone_meal()
 end
 
 function get_sapling()
-    if turtle.getItemCount(sapling_slot) > 0 then
+    if turtle.getItemCount(turtle_slots.sapling) > 0 then
         return
     end
 
@@ -106,6 +106,8 @@ function return_logs()
 end
 
 function main()
+    interface = peripheral.wrap("back")
+    chest = peripheral.wrap("bottom")
     refuel()
     get_bone_meal()
     get_sapling()
