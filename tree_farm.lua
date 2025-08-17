@@ -1,46 +1,47 @@
 os.loadAPI("navigation.lua")
+local interface = peripheral.wrap("back")
+local chest = peripheral.wrap("bottom")
 
-coal_energy_value = 80
+local coal_energy_value = 80
 
-sapling_slot = 14
-bone_meal_slot = 15
-fuel_slot = 16
+local interface_slots = {
+    fuel = 1,
+    sapling = 2,
+    bone_meal = 3
+}
 
-sapling_facing = 'pos_x'
-bone_meal_facing = 'neg_x'
-fuel_facing = 'neg_y'
+local turtle_slots = {
+    fuel = 14,
+    sapling = 15,
+    bone_meal = 16
+}
 
-sapling_info = nil
-log_info = nil
+local sapling_info = nil
+local log_info = nil
 
 function refuel()
     local fuel_deficit = turtle.getFuelLimit() - turtle.getFuelLevel()
     local coal_needed = math.floor(fuel_deficit / coal_energy_value)
     coal_needed = math.min(coal_needed, 64)
-    print(string.format('Fuel Deficit: %d, Coal: %d', fuel_deficit, coal_needed))
     if coal_needed == 0 then
         return
     end
 
-    print('Getting fuel')
-    navigation.set_facing(fuel_facing)
-    turtle.select(fuel_slot)
-    turtle.suck(coal_needed)
+    interface.pushItems(peripheral.getName(chest), interface_slots.fuel, coal_needed)
+    turtle.select(turtle_slots.fuel)
+    turtle.suckDown(coal_needed)
     turtle.refuel(coal_needed)
-    turtle.drop()
 end
 
 function get_bone_meal()
     local item_deficit = turtle.getItemSpace(bone_meal_slot)
-    print(string.format('Bone Meal Deficit: %d', item_deficit))
     if item_deficit == 0 then
         return
     end
 
-    print('Getting bone meal')
-    navigation.set_facing(bone_meal_facing)
-    turtle.select(bone_meal_slot)
-    turtle.suck(item_deficit)
+    interface.pushItems(peripheral.getName(chest), interface_slots.bone_meal, item_deficit)
+    turtle.select(turtle_slots.bone_meal)
+    turtle.suckDown(item_deficit)
 end
 
 function get_sapling()
@@ -48,23 +49,23 @@ function get_sapling()
         return
     end
 
-    print('Getting sapling')
-    navigation.set_facing(sapling_facing)
-    turtle.select(sapling_slot)
-    turtle.suck(1)
+    interface.pushItems(peripheral.getName(chest), interface_slots.sapling, 1)
+    turtle.select(turtle_slots.sapling)
+    turtle.suckDown(1)
+
     if sapling_info == nil then
-        sapling_info = turtle.getItemDetail(sapling_slot)
+        sapling_info = turtle.getItemDetail(turtle_slots.sapling)
     end
 end
 
 function plant_tree()
     navigation.set_facing('pos_y')
-    navigation.go_forward(1)
-    turtle.select(sapling_slot)
+    navigation.go_forward(2)
+    turtle.select(turtle_slots.sapling)
     turtle.place()
     local grown = false
 
-    turtle.select(bone_meal_slot)
+    turtle.select(turtle_slots.bone_meal)
     while not grown do
         turtle.place()
         local _, info = turtle.inspect()
@@ -88,6 +89,8 @@ function cut_tree()
         local _, info = turtle.inspectUp()
         done = (log_info.name ~= info.name)
     end
+
+    turtle.dropDown()
 end
 
 function return_logs()
@@ -95,7 +98,7 @@ function return_logs()
     navigation.set_facing('neg_y')
     for i = 1, 16 do
         local detail = turtle.getItemDetail(i)
-        if detail == nil or (detail.name == log_info.name) then
+        if detail ~= nil and (detail.name == log_info.name) then
             turtle.select(i)
             turtle.drop(detail.count)
         end
@@ -108,7 +111,7 @@ function main()
     get_sapling()
     plant_tree()
     cut_tree()
-    return_logs()
+    -- return_logs()
     navigation.go_to(vector.new(0, 0, 0))
 end
 
